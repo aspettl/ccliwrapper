@@ -4,9 +4,12 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 func init() {
+	generateCmd.Flags().StringP("output-dir", "o", "", "Output directory for wrapper scripts")
+
 	rootCmd.AddCommand(generateCmd)
 }
 
@@ -15,6 +18,7 @@ var generateCmd = &cobra.Command{
 	Short: "Generate wrapper scripts",
 	Long:  `Generate wrapper scripts for all configured CLI tools.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("TODO")
+		outputDir := viper.GetString("output-dir")
+		fmt.Println("TODO, output dir: ", outputDir)
 	},
 }

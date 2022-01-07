@@ -19,6 +19,14 @@ via Docker or Podman. This helps to avoid local installation of many tools
 and limits their access to the host system.`,
 }
 
+const cfgFileDefault = ".ccliwrapper.yaml"
+const outputDirDefault = "~/.local/bin"
+
+// ToolConfig represents the configuration for a CLI tool in the config file
+type ToolConfig struct {
+	name string
+}
+
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
@@ -35,15 +43,18 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.ccliwrapper.yaml)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", fmt.Sprintf("config file (default is $HOME/%v)", cfgFileDefault))
 
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	// rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	viper.SetDefault("output-dir", outputDirDefault)
+	viper.SetDefault("tools", []ToolConfig{})
+	viper.BindPFlag("output-dir", generateCmd.Flags().Lookup("output-dir"))
 }
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
+	// Use yaml as file format when file name does not have a file extension
+	viper.SetConfigType("yaml")
+
 	if cfgFile != "" {
 		// Use config file from the flag.
 		viper.SetConfigFile(cfgFile)
@@ -54,10 +65,8 @@ func initConfig() {
 
 		// Search config in home directory with name ".ccliwrapper.yaml".
 		viper.AddConfigPath(home)
-		viper.SetConfigName(".ccliwrapper.yaml")
+		viper.SetConfigName(cfgFileDefault)
 	}
-
-	viper.AutomaticEnv() // read in environment variables that match
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
