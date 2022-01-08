@@ -22,11 +22,6 @@ and limits their access to the host system.`,
 const cfgFileDefault = ".ccliwrapper.yaml"
 const outputDirDefault = "~/.local/bin"
 
-// ToolConfig represents the configuration for a CLI tool in the config file
-type ToolConfig struct {
-	name string
-}
-
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
@@ -46,7 +41,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", fmt.Sprintf("config file (default is $HOME/%v)", cfgFileDefault))
 
 	viper.SetDefault("output-dir", outputDirDefault)
-	viper.SetDefault("tools", []ToolConfig{})
+	viper.SetDefault("tools", map[string]interface{}{})
 	viper.BindPFlag("output-dir", generateCmd.Flags().Lookup("output-dir"))
 }
 

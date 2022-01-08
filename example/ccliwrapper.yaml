@@ -1,2 +1,6 @@
-output-dir: ~/.local/bin
-tools: []
+output-dir: example/bin
+tools:
+  abc:
+    image_name: test
+  xyz:
+    alias_for: abc
