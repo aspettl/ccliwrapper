@@ -4,5 +4,5 @@ import (
 	_ "embed"
 )
 
-//go:embed root.tpl
+//go:embed root.gotpl
 var RootTemplate string
