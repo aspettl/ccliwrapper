@@ -1,6 +1,6 @@
-output-dir: example/bin
+outputDir: example/bin
 tools:
   abc:
-    image_name: test
+    imageName: test
   xyz:
-    alias_for: abc
+    aliasFor: abc

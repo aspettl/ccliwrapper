@@ -7,16 +7,12 @@ import (
 	"path"
 	"text/template"
 
+	"github.com/aspettl/ccliwrapper/cfg"
 	"github.com/aspettl/ccliwrapper/tpl"
 )
 
-// ToolConfig represents the configuration for a CLI tool in the config file
-type ToolConfig struct {
-	ImageName string
-}
-
 // Generate writes a shell script based on the template and the tool config
-func Generate(outputDir, toolName string, toolConfig ToolConfig) error {
+func Generate(outputDir, toolName string, toolConfig cfg.ToolConfig) error {
 	t, err := template.New("root").Parse(tpl.RootTemplate)
 	if err != nil {
 		return err

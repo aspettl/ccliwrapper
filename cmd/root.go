@@ -4,11 +4,16 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/aspettl/ccliwrapper/cfg"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
+const cfgFileDefault = ".ccliwrapper.yaml"
+const outputDirDefault = "~/.local/bin"
+
 var cfgFile string
+var config cfg.Config
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -18,9 +23,6 @@ var rootCmd = &cobra.Command{
 via Docker or Podman. This helps to avoid local installation of many tools
 and limits their access to the host system.`,
 }
-
-const cfgFileDefault = ".ccliwrapper.yaml"
-const outputDirDefault = "~/.local/bin"
 
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
@@ -40,9 +42,9 @@ func init() {
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", fmt.Sprintf("config file (default is $HOME/%v)", cfgFileDefault))
 
-	viper.SetDefault("output-dir", outputDirDefault)
-	viper.SetDefault("tools", map[string]interface{}{})
-	viper.BindPFlag("output-dir", generateCmd.Flags().Lookup("output-dir"))
+	viper.SetDefault("OutputDir", outputDirDefault)
+	viper.SetDefault("Tools", map[string]cfg.ToolConfig{})
+	viper.BindPFlag("OutputDir", generateCmd.Flags().Lookup("output-dir"))
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -67,4 +69,7 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
 	}
+	// Parse the data into our config struct.
+	err := viper.Unmarshal(&config)
+	cobra.CheckErr(err)
 }
