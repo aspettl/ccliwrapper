@@ -6,8 +6,64 @@ type Config struct {
 	Tools     map[string]ToolConfig
 }
 
+// ToolType determines which kind of tool should be generated
+type ToolType string
+
+// Values for ToolType
+const (
+	WrapperScript = "WrapperScript"
+	Alias         = "Alias"
+)
+
+// ImageTagType determines how the container image tag is determined
+type ImageTagType string
+
+// Values for ImageTagType
+const (
+	Fixed    = "Fixed"
+	FromFile = "FromFile"
+)
+
+// CommandType determines how to infer the executable name for the container
+type CommandType string
+
+// Values for CommandType
+const (
+	DoNotSpecify = "DoNotSpecify"
+	ReuseName    = "ReuseName"
+)
+
 // ToolConfig represents the configuration for a CLI tool in the config file
 type ToolConfig struct {
+	Type ToolType
+
+	// Following keys only when Type=WrapperScript
 	ImageName string
-	AliasFor  string
+	ImageTag  struct {
+		Type ImageTagType
+		// Following keys only when Type=Fixed
+		Value string
+		// Following keys only when Type=FromFile
+		File     string
+		Sed      []string
+		Fallback string
+	}
+	WorkDir string
+	Command struct {
+		Type CommandType
+		// Following keys only when Type=ReuseName
+		Folder string
+	}
+	Mounts []struct {
+		Source string
+		Target string
+	}
+	Env []struct {
+		Name  string
+		Value string
+	}
+	CustomScript string
+
+	// Following keys only when Type=Alias
+	AliasFor string
 }

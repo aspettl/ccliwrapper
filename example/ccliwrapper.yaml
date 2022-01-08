@@ -1,6 +1,163 @@
 outputDir: example/bin
+
 tools:
-  abc:
-    imageName: test
-  xyz:
-    aliasFor: abc
+  aws:
+    type: WrapperScript
+    imageName: amazon/aws-cli
+    imageTag:
+      type: Fixed
+      value: latest
+    command:
+      type: DoNotSpecify
+    mounts:
+      - source: $HOME/.aws
+        target: /root/.aws
+
+  go:
+    type: WrapperScript
+    imageName: golang
+    imageTag:
+      type: Fixed
+      value: "1.17"
+    command:
+      type: ReuseName
+    mounts:
+      - source: $HOME/.cache/go-pkg-mod
+        target: /go/pkg/mod
+  gofmt:
+    type: Alias
+    aliasFor: go
+
+  node:
+    type: WrapperScript
+    imageName: node
+    imageTag:
+      type: Fixed
+      value: "16"
+    workDir: /app
+    command:
+      type: ReuseName
+      folder: node_modules/.bin
+    customScript: |-
+      # automatically publish port 8080 for "npm start" or "yarn start"
+      if [[ "$tool" = "npm" && "$1" = "start" ]] ; then
+        additional_params="$additional_params -p 8080:8080"
+      fi
+      if [[ "$tool" = "yarn" && "$1" = "start" ]] ; then
+        additional_params="$additional_params -p 8080:8080"
+      fi
+  npm:
+    type: Alias
+    aliasFor: node
+  yarn:
+    type: Alias
+    aliasFor: node
+
+  ruby:
+    type: WrapperScript
+    imageName: ruby
+    imageTag:
+      type: FromFile
+      file: .ruby-version
+      sed:
+        - "s/ruby-//"
+      fallback: latest
+    workDir: /app
+    command:
+      type: ReuseName
+      folder: .bundle/bin
+    env:
+      - name: GEM_HOME
+        value: /app/.bundle
+    customScript: |-
+      # automatically publish port 3000 for "rails s" or "rails server" - however, it is still
+      # required to call "rails server -b 0.0.0.0" so that port 3000 will really be reachable
+      if [[ "$tool" = "rails" && ( "$1" = "server" || "$1" = "s" ) ]] ; then
+        additional_params="$additional_params -p 3000:3000"
+      fi
+      if [[ "$tool" = "ruby" && "$(basename "$1")" = "rails" && ( "$2" = "server" || "$2" = "s" ) ]] ; then
+        additional_params="$additional_params -p 3000:3000"
+      fi
+  bundle:
+    type: Alias
+    aliasFor: ruby
+  gem:
+    type: Alias
+    aliasFor: ruby
+  irb:
+    type: Alias
+    aliasFor: ruby
+  rails:
+    type: Alias
+    aliasFor: ruby
+  rake:
+    type: Alias
+    aliasFor: ruby
+
+  kubectl:
+    type: WrapperScript
+    imageName: bitnami/kubectl
+    imageTag:
+      type: Fixed
+      value: "1.22"
+    command:
+      type: DoNotSpecify
+    mounts:
+      - source: $HOME/.kube
+        target: /.kube
+    customScript: |-
+      # implement simple caching for "kubectl completion" commands so that this can be used
+      # in e.g. .bashrc without a big performance impact
+      if [ "$1" = "completion" ] ; then
+        image_id=$(podman image inspect $image --format='{{.Id}}' 2>/dev/null || true)
+        if [ -z "$image_id" ] ; then
+          podman pull "$image" >&1
+          image_id=$(podman image inspect $image --format='{{.Id}}')
+        fi
+        checksum_output=$(echo "$image_id:" "$@" | sha256sum)
+        checksum="${checksum_output%  -}"
+        cache_folder="$HOME/.cache/container_cli_completion"
+        if [ -s "$cache_folder/$checksum" ] ; then
+          cat "$cache_folder/$checksum"
+        else
+          mkdir -p "$cache_folder"
+          podman run --rm "$image" "$@" | tee "$cache_folder/$checksum"
+        fi
+        exit 0
+      fi
+
+  helm:
+    type: WrapperScript
+    imageName: alpine/helm
+    imageTag:
+      type: Fixed
+      value: "3.7.2"
+    command:
+      type: DoNotSpecify
+    mounts:
+      - source: $HOME/.kube
+        target: /root/.kube
+      - source: $HOME/.config/helm
+        target: /root/.config/helm
+      - source: $HOME/.cache/helm
+        target: /root/.cache/helm
+    customScript: |-
+      # implement simple caching for "helm completion" commands so that this can be used
+      # in e.g. .bashrc without a big performance impact
+      if [ "$1" = "completion" ] ; then
+        image_id=$(podman image inspect $image --format='{{.Id}}' 2>/dev/null || true)
+        if [ -z "$image_id" ] ; then
+          podman pull "$image" >&1
+          image_id=$(podman image inspect $image --format='{{.Id}}')
+        fi
+        checksum_output=$(echo "$image_id:" "$@" | sha256sum)
+        checksum="${checksum_output%  -}"
+        cache_folder="$HOME/.cache/container_cli_completion"
+        if [ -s "$cache_folder/$checksum" ] ; then
+          cat "$cache_folder/$checksum"
+        else
+          mkdir -p "$cache_folder"
+          podman run --rm "$image" "$@" | tee "$cache_folder/$checksum"
+        fi
+        exit 0
+      fi
