@@ -1,5 +1,9 @@
 package cfg
 
+import (
+	"strings"
+)
+
 // Config represents the whole config file
 type Config struct {
 	OutputDir string
@@ -66,4 +70,28 @@ type ToolConfig struct {
 
 	// Following keys only when Type=Alias
 	AliasFor string
+}
+
+func (toolType ToolType) IsWrapperScript() bool {
+	return strings.EqualFold(string(toolType), WrapperScript)
+}
+
+func (toolType ToolType) IsAlias() bool {
+	return strings.EqualFold(string(toolType), Alias)
+}
+
+func (imageTagType ImageTagType) IsFixed() bool {
+	return strings.EqualFold(string(imageTagType), Fixed)
+}
+
+func (imageTagType ImageTagType) IsFromFile() bool {
+	return strings.EqualFold(string(imageTagType), FromFile)
+}
+
+func (commandType CommandType) IsDoNotSpecify() bool {
+	return strings.EqualFold(string(commandType), DoNotSpecify)
+}
+
+func (commandType CommandType) IsReuseName() bool {
+	return strings.EqualFold(string(commandType), ReuseName)
 }

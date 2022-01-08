@@ -72,4 +72,36 @@ func initConfig() {
 	// Parse the data into our config struct.
 	err := viper.Unmarshal(&config)
 	cobra.CheckErr(err)
+
+	// Apply some default values for configured tools.
+	for toolName, toolConfig := range config.Tools {
+		if !toolConfig.Type.IsWrapperScript() && !toolConfig.Type.IsAlias() {
+			toolConfig.Type = cfg.WrapperScript
+		}
+		if toolConfig.ImageName == "" {
+			toolConfig.ImageName = "undefined"
+		}
+		if !toolConfig.ImageTag.Type.IsFixed() && !toolConfig.ImageTag.Type.IsFromFile() {
+			toolConfig.ImageTag.Type = cfg.Fixed
+		}
+		if toolConfig.ImageTag.Value == "" {
+			toolConfig.ImageTag.Value = "latest"
+		}
+		if toolConfig.ImageTag.File == "" {
+			toolConfig.ImageTag.File = "undefined"
+		}
+		if toolConfig.ImageTag.Fallback == "" {
+			toolConfig.ImageTag.Fallback = "latest"
+		}
+		if toolConfig.WorkDir == "" {
+			toolConfig.WorkDir = "/work"
+		}
+		if !toolConfig.Command.Type.IsDoNotSpecify() && !toolConfig.Command.Type.IsReuseName() {
+			toolConfig.Command.Type = cfg.DoNotSpecify
+		}
+		if toolConfig.AliasFor == "" {
+			toolConfig.AliasFor = "undefined"
+		}
+		config.Tools[toolName] = toolConfig
+	}
 }
