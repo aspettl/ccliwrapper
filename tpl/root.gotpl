@@ -1,2 +1,48 @@
 #!/bin/bash
-echo "TODO {{ .ImageName }}"
+set -e
+
+tool=$(basename "$0")
+current_folder=$(pwd)
+
+{{ if .ImageTag.Type.IsFromFile -}}
+image_tag=""
+if [ -e "$current_folder/{{ .ImageTag.File }}" ] ; then
+  {{- if .ImageTag.Sed }}
+  image_tag=$(sed {{ range .ImageTag.Sed }}-e '{{ . }}' {{ end }} "$current_folder/{{ .ImageTag.File }}")
+  {{- else }}
+  image_tag=$(head -n1 "$current_folder/{{ .ImageTag.File }}")
+  {{- end }}
+fi
+if [ -z "$image_tag" ] ; then
+  image_tag="{{ .ImageTag.Fallback }}"
+fi
+{{- else }}
+image_tag="{{ .ImageTag.Value }}"
+{{- end }}
+
+image="{{ .ImageName }}:$image_tag"
+container_folder="{{ .WorkDir }}"
+additional_params="--user 0:0 {{ range .Mounts }}-v {{ .Source }}:{{ .Target }} {{ end }}{{ range .Env }}-e {{ .Name }}={{ .Value }} {{ end }}"
+
+{{ if .Command.Type.IsReuseName -}}
+{{ if .Command.Folder -}}
+tool_folder="{{ .Command.Folder }}"
+{{ if eq (slice .Command.Folder 0 1) "/" -}}
+tool_path="${tool_folder%/}/$tool"
+{{- else }}
+if [ -e "$current_folder/${tool_folder%/}/$tool" ] ; then
+  tool_path="$container_folder/${tool_folder%/}/$tool"
+else
+  tool_path="$tool"
+fi
+{{- end }}
+{{- else }}
+tool_path="$tool"
+{{- end }}
+{{- end }}
+
+{{ .CustomScript }}
+
+[[ -t 1 ]] && additional_params="--tty $additional_params"
+
+exec podman run --rm --interactive -v "$current_folder:$container_folder" $additional_params -w "$container_folder" "$image" {{ if not .Command.Type.IsDoNotSpecify }}"$tool_path" {{ end }}"$@"
