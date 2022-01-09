@@ -12,6 +12,7 @@ import (
 const cfgFileDefault = ".ccliwrapper.yaml"
 const outputDirDefault = "~/.local/bin"
 
+var homeDir string
 var cfgFile string
 var config cfg.Config
 
@@ -34,13 +35,18 @@ func Execute() {
 }
 
 func init() {
+	// Find home directory.
+	var err error
+	homeDir, err = os.UserHomeDir()
+	cobra.CheckErr(err)
+
 	cobra.OnInitialize(initConfig)
 
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", fmt.Sprintf("config file (default is $HOME/%v)", cfgFileDefault))
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", fmt.Sprintf("config file (default is ~/%v)", cfgFileDefault))
 
 	viper.SetDefault("OutputDir", outputDirDefault)
 	viper.SetDefault("Tools", map[string]cfg.ToolConfig{})
@@ -56,12 +62,8 @@ func initConfig() {
 		// Use config file from the flag.
 		viper.SetConfigFile(cfgFile)
 	} else {
-		// Find home directory.
-		home, err := os.UserHomeDir()
-		cobra.CheckErr(err)
-
 		// Search config in home directory with name ".ccliwrapper.yaml".
-		viper.AddConfigPath(home)
+		viper.AddConfigPath(homeDir)
 		viper.SetConfigName(cfgFileDefault)
 	}
 
