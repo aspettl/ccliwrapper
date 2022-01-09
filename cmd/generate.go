@@ -1,7 +1,9 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
+	"io/fs"
 	"os"
 	"strings"
 
@@ -27,10 +29,33 @@ var generateCmd = &cobra.Command{
 		}
 		fmt.Fprintln(os.Stderr, "Generating wrapper scripts in output folder:", outputDir)
 
+		if len(config.Tools) == 0 {
+			fmt.Fprintln(os.Stderr, "Warning: no tools are configured, nothing is generated.")
+		}
+
 		for toolName, toolConfig := range config.Tools {
 			switch toolConfig.Type {
 			case cfg.WrapperScript:
 				fmt.Fprintln(os.Stderr, "Generating script:", toolName)
+
+				for i, mount := range toolConfig.Mounts {
+					mount.Source = expandPath(mount.Source)
+					toolConfig.Mounts[i] = mount
+
+					_, err := os.Stat(mount.Source)
+					if err == nil {
+						continue
+					}
+					if !errors.Is(err, fs.ErrNotExist) {
+						fmt.Fprintln(os.Stderr, "Error:", err)
+						continue
+					}
+					fmt.Fprintln(os.Stderr, "Warning: mount source path does not exist, creating folder:", mount.Source)
+					if err := os.MkdirAll(mount.Source, 0755); err != nil {
+						fmt.Fprintln(os.Stderr, "Error:", err)
+					}
+				}
+
 				err := gen.Generate(outputDir, toolName, toolConfig)
 				if err != nil {
 					fmt.Fprintln(os.Stderr, "Failed:", err)
