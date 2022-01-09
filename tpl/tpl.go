@@ -4,5 +4,5 @@ import (
 	_ "embed"
 )
 
-//go:embed root.gotpl
-var RootTemplate string
+//go:embed wrapperscript.gotpl
+var WrapperScript string

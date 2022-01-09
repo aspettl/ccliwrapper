@@ -13,7 +13,7 @@ import (
 
 // Generate writes a shell script based on the template and the tool config
 func Generate(outputDir, toolName string, toolConfig cfg.ToolConfig) error {
-	t, err := template.New("root").Parse(tpl.RootTemplate)
+	t, err := template.New("root").Parse(tpl.WrapperScript)
 	if err != nil {
 		return err
 	}
