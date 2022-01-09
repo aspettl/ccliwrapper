@@ -28,6 +28,6 @@ initial template or to add all keys and their defaults to the current config.`,
 		}
 		err := viper.WriteConfigAs(fileName)
 		cobra.CheckErr(err)
-		fmt.Fprintln(os.Stderr, "Written to config file:", fileName)
+		fmt.Println("Written to config file:", fileName)
 	},
 }

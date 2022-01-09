@@ -27,16 +27,16 @@ var generateCmd = &cobra.Command{
 		if err := os.MkdirAll(outputDir, 0755); err != nil {
 			cobra.CheckErr(err)
 		}
-		fmt.Fprintln(os.Stderr, "Generating wrapper scripts in output folder:", outputDir)
+		fmt.Println("Generating wrapper scripts in output folder:", outputDir)
 
 		if len(config.Tools) == 0 {
-			fmt.Fprintln(os.Stderr, "Warning: no tools are configured, nothing is generated.")
+			fmt.Println("Warning: no tools are configured, nothing is generated.")
 		}
 
 		for toolName, toolConfig := range config.Tools {
 			switch toolConfig.Type {
 			case cfg.WrapperScript:
-				fmt.Fprintln(os.Stderr, "Generating script:", toolName)
+				fmt.Println("Generating script:", toolName)
 
 				for i, mount := range toolConfig.Mounts {
 					mount.Source = expandPath(mount.Source)
@@ -50,7 +50,7 @@ var generateCmd = &cobra.Command{
 						fmt.Fprintln(os.Stderr, "Error:", err)
 						continue
 					}
-					fmt.Fprintln(os.Stderr, "Warning: mount source path does not exist, creating folder:", mount.Source)
+					fmt.Println("Warning: mount source path does not exist, creating folder:", mount.Source)
 					if err := os.MkdirAll(mount.Source, 0755); err != nil {
 						fmt.Fprintln(os.Stderr, "Error:", err)
 					}
@@ -61,7 +61,7 @@ var generateCmd = &cobra.Command{
 					fmt.Fprintln(os.Stderr, "Failed:", err)
 				}
 			case cfg.Alias:
-				fmt.Fprintln(os.Stderr, "Generating alias:", toolName)
+				fmt.Println("Generating alias:", toolName)
 				err := gen.GenerateAlias(outputDir, toolConfig.AliasFor, toolName)
 				if err != nil {
 					fmt.Fprintln(os.Stderr, "Failed:", err)
