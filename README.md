@@ -27,10 +27,11 @@ i.e., CLI tools that can be started in a Docker or Podman container.
 
 ## How to use
 
-### Compile and run
+### Option 1: Use prebuilt binary (recommended)
 
-There is no prebuilt binary at the moment, run `go build` to compile.
-Then, `./ccliwrapper --help` shows some usage hints.
+Binaries are automatically built for all releases and can be downloaded from the
+release page at GitHub. Extract the artifact suitable for your platform and run
+`./ccliwrapper --help` to get some usage hints.
 
 Generate wrapper scripts for example config:
 
@@ -38,7 +39,13 @@ Generate wrapper scripts for example config:
 
 The example config also functions as documentation for now.
 
-### Use prebuilt docker image
+**Note: only the x64 artifact for Linux is tested for now.**
+
+### Option 2: Compile and run
+
+Check out this repository and run `go build` to compile. Then see Option 1.
+
+### Option 3: Use prebuilt docker image
 
 There is a distroless image for `ccliwrapper` that can be easily used. Of course, this
 means that you need to take care that all folders (config file, output folder) needed
