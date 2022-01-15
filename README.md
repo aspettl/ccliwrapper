@@ -27,6 +27,8 @@ i.e., CLI tools that can be started in a Docker or Podman container.
 
 ## How to use
 
+### Compile and run
+
 There is no prebuilt binary at the moment, run `go build` to compile.
 Then, `./ccliwrapper --help` shows some usage hints.
 
@@ -35,6 +37,21 @@ Generate wrapper scripts for example config:
     ./ccliwrapper generate --config=example/ccliwrapper.yaml
 
 The example config also functions as documentation for now.
+
+### Use prebuilt docker image
+
+There is a distroless image for `ccliwrapper` that can be easily used. Of course, this
+means that you need to take care that all folders (config file, output folder) needed
+are mounted.
+
+For the example config in this repo use (with `podman`):
+
+    podman run --rm -v $PWD/example:/example docker.io/aspettl/ccliwrapper:edge generate --config /example/ccliwrapper.yaml
+
+Note: `ccliwrapper` tries to create folders listed in the config file for mounts (and
+prints a warning if it does so). The simple reason is that a `run` command fails when
+local folders do not exist. Naturally, this feature does not work properly when
+`ccliwrapper` itself runs in a container - because most folders will not exist there.
 
 ## Ideas
 
