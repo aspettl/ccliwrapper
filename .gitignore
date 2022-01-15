@@ -24,3 +24,6 @@ go.work
 # Output folder for example config file
 example/bin/*
 !example/bin/.gitkeep
+
+# GoReleaser
+dist/
