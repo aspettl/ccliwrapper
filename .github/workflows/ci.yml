@@ -19,3 +19,6 @@ jobs:
 
     - name: Test
       run: go test -v ./...
+
+    - name: Formatting
+      run: test -z "$(gofmt -l .)"
