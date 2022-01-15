@@ -18,3 +18,10 @@ go.work
 # Output folder for example config file
 example/bin/*
 !example/bin/.gitkeep
+
+# Folders/files for Git and dev environment
+.devcontainer
+.git
+.github
+.gitignore
+.vscode
