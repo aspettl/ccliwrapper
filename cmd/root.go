@@ -49,6 +49,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", fmt.Sprintf("config file (default is ~/%v)", cfgFileDefault))
 
 	viper.SetDefault("OutputDir", outputDirDefault)
+	viper.SetDefault("Engine", "podman")
 	viper.SetDefault("Tools", map[string]cfg.ToolConfig{})
 	viper.BindPFlag("OutputDir", generateCmd.Flags().Lookup("output-dir"))
 }

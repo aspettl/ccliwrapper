@@ -7,6 +7,7 @@ import (
 // Config represents the whole config file
 type Config struct {
 	OutputDir string
+	Engine    string
 	Tools     map[string]ToolConfig
 }
 
@@ -42,34 +43,42 @@ type ToolConfig struct {
 	Type ToolType
 
 	// Following keys only when Type=WrapperScript
-	ImageName string
-	ImageTag  struct {
-		Type ImageTagType
-		// Following keys only when Type=Fixed
-		Value string
-		// Following keys only when Type=FromFile
-		File     string
-		Sed      []string
-		Fallback string
-	}
-	WorkDir string
-	Command struct {
-		Type CommandType
-		// Following keys only when Type=ReuseName
-		Folder string
-	}
-	Mounts []struct {
-		Source string
-		Target string
-	}
-	Env []struct {
-		Name  string
-		Value string
-	}
+	ImageName    string
+	ImageTag     ImageTagConfig
+	WorkDir      string
+	Command      CommandConfig
+	Mounts       []MountConfig
+	Env          []EnvConfig
 	CustomScript string
 
 	// Following keys only when Type=Alias
 	AliasFor string
+}
+
+type ImageTagConfig struct {
+	Type ImageTagType
+	// Following keys only when Type=Fixed
+	Value string
+	// Following keys only when Type=FromFile
+	File     string
+	Sed      []string
+	Fallback string
+}
+
+type CommandConfig struct {
+	Type CommandType
+	// Following keys only when Type=ReuseName
+	Folder string
+}
+
+type MountConfig struct {
+	Source string
+	Target string
+}
+
+type EnvConfig struct {
+	Name  string
+	Value string
 }
 
 func (toolType ToolType) IsWrapperScript() bool {

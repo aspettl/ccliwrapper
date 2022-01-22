@@ -56,7 +56,18 @@ var generateCmd = &cobra.Command{
 					}
 				}
 
-				err := gen.Generate(outputDir, toolName, toolConfig)
+				toolParams := gen.ToolParams{
+					Engine:       config.Engine,
+					Name:         toolName,
+					ImageName:    toolConfig.ImageName,
+					ImageTag:     toolConfig.ImageTag,
+					WorkDir:      toolConfig.WorkDir,
+					Command:      toolConfig.Command,
+					Mounts:       toolConfig.Mounts,
+					Env:          toolConfig.Env,
+					CustomScript: toolConfig.CustomScript,
+				}
+				err := gen.Generate(outputDir, toolParams)
 				if err != nil {
 					fmt.Fprintln(os.Stderr, "Failed:", err)
 				}

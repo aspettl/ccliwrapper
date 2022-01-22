@@ -11,15 +11,27 @@ import (
 	"github.com/aspettl/ccliwrapper/tpl"
 )
 
+type ToolParams struct {
+	Engine       string
+	Name         string
+	ImageName    string
+	ImageTag     cfg.ImageTagConfig
+	WorkDir      string
+	Command      cfg.CommandConfig
+	Mounts       []cfg.MountConfig
+	Env          []cfg.EnvConfig
+	CustomScript string
+}
+
 // Generate writes a shell script based on the template and the tool config
-func Generate(outputDir, toolName string, toolConfig cfg.ToolConfig) error {
+func Generate(outputDir string, toolParams ToolParams) error {
 	t, err := template.New("root").Parse(tpl.WrapperScript)
 	if err != nil {
 		return err
 	}
 
-	tmpFileName := path.Join(outputDir, toolName+".tmp")
-	fileName := path.Join(outputDir, toolName)
+	tmpFileName := path.Join(outputDir, toolParams.Name+".tmp")
+	fileName := path.Join(outputDir, toolParams.Name)
 
 	if err := os.Remove(tmpFileName); err != nil && !errors.Is(err, fs.ErrNotExist) {
 		return err
@@ -30,7 +42,7 @@ func Generate(outputDir, toolName string, toolConfig cfg.ToolConfig) error {
 	}
 	defer f.Close()
 
-	err = t.Execute(f, toolConfig)
+	err = t.Execute(f, toolParams)
 	if err != nil {
 		return err
 	}
