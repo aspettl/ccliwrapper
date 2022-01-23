@@ -21,6 +21,9 @@ ccliwrapper
 # Go workspace file
 go.work
 
+# Go cache
+.cache
+
 # Output folder for example config file
 example/bin/*
 !example/bin/.gitkeep

@@ -29,7 +29,10 @@ declare -a additional_params=(
   --interactive
   -v "$current_folder:$container_folder"
   -w "$container_folder"
-  --user 0:0
+  --user "$(id -u):$(id -g)"
+  {{- if eq .Engine "podman" }}
+  --userns keep-id
+  {{- end }}
   {{- range .Mounts }}
   -v '{{ .Source }}:{{ .Target }}'
   {{- end }}

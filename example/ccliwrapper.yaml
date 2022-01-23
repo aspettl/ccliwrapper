@@ -20,11 +20,12 @@ tools:
     imageTag:
       type: Fixed
       value: "1.17"
+    workDir: /app
     command:
       type: ReuseName
-    mounts:
-      - source: $HOME/.cache/go-pkg-mod
-        target: /go/pkg/mod
+    env:
+      - name: GOMODCACHE
+        value: /app/.cache/go-mod-cache
   gofmt:
     type: Alias
     aliasFor: go
