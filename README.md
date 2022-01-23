@@ -16,14 +16,13 @@ i.e., CLI tools that can be started in a Docker or Podman container.
 * Upgrading CLI tools is then as easy as specifying a new image tag or pulling the
   latest tag again
 * Standard mechanism for shell completion can be used
+* Supports (rootfull) Docker and (rootless) Podman currently as engine for containers
 
 ## Limitations
 
 * By design, applications in containers can only access those folders that are mounted
   into the container (by default only the current working directory) and ports are
   opened on a virtual network interface.
-* **Currently: only rootless Podman containers are supported**, i.e., we rely on the
-  fact that root (UID 0) in the container is mapped to the current user
 
 ## How to use
 
@@ -64,7 +63,6 @@ local folders do not exist. Naturally, this feature does not work properly when
 
 Not yet implemented:
 
-* Support also Docker, not only rootless Podman
 * Auto-pull images
 * Auto-build images with additional layers, e.g. for extra tools or UID switch
 * Possibility to specify additional parameters for Docker/Podman run command
