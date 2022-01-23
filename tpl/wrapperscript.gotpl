@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 set -e
 
-engine="{{ .Engine }}"
+engine='{{ .Engine }}'
 tool=$(basename "$0")
 current_folder=$(pwd)
 
+image_name='{{ .ImageName }}'
 {{ if .ImageTag.Type.IsFromFile -}}
 image_tag=""
 if [ -e "$current_folder/{{ .ImageTag.File }}" ] ; then
@@ -15,19 +16,31 @@ if [ -e "$current_folder/{{ .ImageTag.File }}" ] ; then
   {{- end }}
 fi
 if [ -z "$image_tag" ] ; then
-  image_tag="{{ .ImageTag.Fallback }}"
+  image_tag='{{ .ImageTag.Fallback }}'
 fi
 {{- else }}
-image_tag="{{ .ImageTag.Value }}"
+image_tag='{{ .ImageTag.Value }}'
 {{- end }}
 
-image="{{ .ImageName }}:$image_tag"
-container_folder="{{ .WorkDir }}"
-additional_params="--user 0:0 {{ range .Mounts }}-v {{ .Source }}:{{ .Target }} {{ end }}{{ range .Env }}-e {{ .Name }}={{ .Value }} {{ end }}"
+image="$image_name:$image_tag"
+container_folder='{{ .WorkDir }}'
+declare -a additional_params=(
+  --rm
+  --interactive
+  -v "$current_folder:$container_folder"
+  -w "$container_folder"
+  --user 0:0
+  {{- range .Mounts }}
+  -v '{{ .Source }}:{{ .Target }}'
+  {{- end }}
+  {{- range .Env }}
+  -e '{{ .Name }}={{ .Value }}'
+  {{- end }}
+)
 
 {{ if .Command.Type.IsReuseName -}}
 {{ if .Command.Folder -}}
-tool_folder="{{ .Command.Folder }}"
+tool_folder='{{ .Command.Folder }}'
 {{ if eq (slice .Command.Folder 0 1) "/" -}}
 tool_path="${tool_folder%/}/$tool"
 {{- else }}
@@ -44,6 +57,6 @@ tool_path="$tool"
 
 {{ .CustomScript }}
 
-[[ -t 1 ]] && additional_params="--tty $additional_params"
+[[ -t 1 ]] && additional_params+=(--tty)
 
-exec $engine run --rm --interactive -v "$current_folder:$container_folder" $additional_params -w "$container_folder" "$image" {{ if not .Command.Type.IsDoNotSpecify }}"$tool_path" {{ end }}"$@"
+exec $engine run "${additional_params[@]}" "$image" {{ if not .Command.Type.IsDoNotSpecify }}"$tool_path" {{ end }}"$@"
