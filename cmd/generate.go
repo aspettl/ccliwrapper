@@ -62,6 +62,7 @@ var generateCmd = &cobra.Command{
 					ImageName:    toolConfig.ImageName,
 					ImageTag:     toolConfig.ImageTag,
 					WorkDir:      toolConfig.WorkDir,
+					HomeDir:      toolConfig.HomeDir,
 					Command:      toolConfig.Command,
 					Mounts:       toolConfig.Mounts,
 					Env:          toolConfig.Env,

@@ -106,6 +106,9 @@ func initConfig() {
 		if toolConfig.WorkDir == "" {
 			toolConfig.WorkDir = "/work"
 		}
+		if toolConfig.HomeDir == "" {
+			toolConfig.HomeDir = "/home/container"
+		}
 		if !toolConfig.Command.Type.IsDoNotSpecify() && !toolConfig.Command.Type.IsReuseName() {
 			toolConfig.Command.Type = cfg.DoNotSpecify
 		}

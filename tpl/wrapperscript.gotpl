@@ -36,6 +36,10 @@ declare -a additional_params=(
   {{- range .Mounts }}
   -v '{{ .Source }}:{{ .Target }}'
   {{- end }}
+  {{- if ne .HomeDir .WorkDir }}
+  --tmpfs '{{ .HomeDir }}'
+  {{- end }}
+  -e 'HOME={{ .HomeDir }}'
   {{- range .Env }}
   -e '{{ .Name }}={{ .Value }}'
   {{- end }}

@@ -46,6 +46,7 @@ type ToolConfig struct {
 	ImageName    string
 	ImageTag     ImageTagConfig
 	WorkDir      string
+	HomeDir      string
 	Command      CommandConfig
 	Mounts       []MountConfig
 	Env          []EnvConfig

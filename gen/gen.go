@@ -17,6 +17,7 @@ type ToolParams struct {
 	ImageName    string
 	ImageTag     cfg.ImageTagConfig
 	WorkDir      string
+	HomeDir      string
 	Command      cfg.CommandConfig
 	Mounts       []cfg.MountConfig
 	Env          []cfg.EnvConfig

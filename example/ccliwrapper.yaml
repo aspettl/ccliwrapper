@@ -14,7 +14,7 @@ tools:
       type: DoNotSpecify
     mounts:
       - source: $HOME/.aws
-        target: /root/.aws
+        target: /home/container/.aws
 
   go:
     type: WrapperScript
@@ -108,7 +108,7 @@ tools:
       type: DoNotSpecify
     mounts:
       - source: $HOME/.kube
-        target: /.kube
+        target: /home/container/.kube
     customScript: |-
       # implement simple caching for "kubectl completion" commands so that this can be used
       # in e.g. .bashrc without a big performance impact
@@ -140,11 +140,11 @@ tools:
       type: DoNotSpecify
     mounts:
       - source: $HOME/.kube
-        target: /root/.kube
+        target: /home/container/.kube
       - source: $HOME/.config/helm
-        target: /root/.config/helm
+        target: /home/container/.config/helm
       - source: $HOME/.cache/helm
-        target: /root/.cache/helm
+        target: /home/container/.cache/helm
     customScript: |-
       # implement simple caching for "helm completion" commands so that this can be used
       # in e.g. .bashrc without a big performance impact
