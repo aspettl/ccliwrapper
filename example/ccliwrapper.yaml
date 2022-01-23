@@ -113,10 +113,10 @@ tools:
       # implement simple caching for "kubectl completion" commands so that this can be used
       # in e.g. .bashrc without a big performance impact
       if [ "$1" = "completion" ] ; then
-        image_id=$(podman image inspect $image --format='{{.Id}}' 2>/dev/null || true)
+        image_id=$($engine image inspect $image --format='{{.Id}}' 2>/dev/null || true)
         if [ -z "$image_id" ] ; then
-          podman pull "$image" >&1
-          image_id=$(podman image inspect $image --format='{{.Id}}')
+          $engine pull "$image" >&2
+          image_id=$($engine image inspect $image --format='{{.Id}}')
         fi
         checksum_output=$(echo "$image_id:" "$@" | sha256sum)
         checksum="${checksum_output%  -}"
@@ -125,7 +125,7 @@ tools:
           cat "$cache_folder/$checksum"
         else
           mkdir -p "$cache_folder"
-          podman run --rm "$image" "$@" | tee "$cache_folder/$checksum"
+          $engine run --rm "$image" "$@" | tee "$cache_folder/$checksum"
         fi
         exit 0
       fi
@@ -149,10 +149,10 @@ tools:
       # implement simple caching for "helm completion" commands so that this can be used
       # in e.g. .bashrc without a big performance impact
       if [ "$1" = "completion" ] ; then
-        image_id=$(podman image inspect $image --format='{{.Id}}' 2>/dev/null || true)
+        image_id=$($engine image inspect $image --format='{{.Id}}' 2>/dev/null || true)
         if [ -z "$image_id" ] ; then
-          podman pull "$image" >&1
-          image_id=$(podman image inspect $image --format='{{.Id}}')
+          $engine pull "$image" >&2
+          image_id=$($engine image inspect $image --format='{{.Id}}')
         fi
         checksum_output=$(echo "$image_id:" "$@" | sha256sum)
         checksum="${checksum_output%  -}"
@@ -161,7 +161,7 @@ tools:
           cat "$cache_folder/$checksum"
         else
           mkdir -p "$cache_folder"
-          podman run --rm "$image" "$@" | tee "$cache_folder/$checksum"
+          $engine run --rm "$image" "$@" | tee "$cache_folder/$checksum"
         fi
         exit 0
       fi
