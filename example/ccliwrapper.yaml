@@ -1,5 +1,7 @@
 outputDir: example/bin
-engine: podman
+
+# Engine is "podman" or "docker", auto-detected by default.
+#engine: podman
 
 tools:
   aws:

@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"os"
 
@@ -40,6 +41,12 @@ func init() {
 	homeDir, err = os.UserHomeDir()
 	cobra.CheckErr(err)
 
+	// Use Podman by default (if installed, otherwise fall back to Docker).
+	engineDefault := "docker"
+	if fileExists("/usr/bin/podman") {
+		engineDefault = "podman"
+	}
+
 	cobra.OnInitialize(initConfig)
 
 	// Here you will define your flags and configuration settings.
@@ -49,7 +56,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", fmt.Sprintf("config file (default is ~/%v)", cfgFileDefault))
 
 	viper.SetDefault("OutputDir", outputDirDefault)
-	viper.SetDefault("Engine", "podman")
+	viper.SetDefault("Engine", engineDefault)
 	viper.SetDefault("Tools", map[string]cfg.ToolConfig{})
 	viper.BindPFlag("OutputDir", generateCmd.Flags().Lookup("output-dir"))
 }
@@ -107,4 +114,9 @@ func initConfig() {
 		}
 		config.Tools[toolName] = toolConfig
 	}
+}
+
+func fileExists(path string) bool {
+	_, err := os.Stat(path)
+	return !errors.Is(err, os.ErrNotExist)
 }
