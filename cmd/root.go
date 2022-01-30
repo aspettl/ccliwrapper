@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"runtime"
 
 	"github.com/aspettl/ccliwrapper/cfg"
 	"github.com/spf13/cobra"
@@ -115,6 +116,9 @@ func initConfig() {
 		}
 		if toolConfig.AliasFor == "" {
 			toolConfig.AliasFor = "undefined"
+		}
+		if runtime.GOOS == "windows" {
+			toolConfig.ForceTemplate = true
 		}
 		config.Tools[toolName] = toolConfig
 	}

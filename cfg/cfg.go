@@ -54,7 +54,8 @@ type ToolConfig struct {
 	CustomScript string
 
 	// Following keys only when Type=Alias
-	AliasFor string
+	AliasFor      string
+	ForceTemplate bool
 }
 
 type ImageTagConfig struct {

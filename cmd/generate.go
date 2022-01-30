@@ -51,7 +51,12 @@ var generateCmd = &cobra.Command{
 				}
 			case cfg.Alias:
 				fmt.Println("Generating alias:", toolName)
-				err := gen.GenerateAlias(outputDir, toolConfig.AliasFor, toolName)
+				var err error
+				if toolConfig.ForceTemplate {
+					err = generateWrapperScript(outputDir, templateFile, toolName, config.Tools[toolConfig.AliasFor])
+				} else {
+					err = gen.GenerateAlias(outputDir, toolConfig.AliasFor, toolName)
+				}
 				if err != nil {
 					fmt.Fprintln(os.Stderr, "Failed:", err)
 				}
