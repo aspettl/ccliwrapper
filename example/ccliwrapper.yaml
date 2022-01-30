@@ -1,5 +1,8 @@
 outputDir: example/bin
 
+# Custom template file for wrapper scripts (use built-in template if empty)
+#templateFile: tpl/wrapperscript.gotpl
+
 # Engine is "podman" or "docker", auto-detected by default.
 #engine: podman
 

@@ -14,6 +14,7 @@ import (
 
 func init() {
 	generateCmd.Flags().StringP("output-dir", "o", "", "Output directory for wrapper scripts")
+	generateCmd.Flags().StringP("template-file", "t", "", "Path to custom wrapper script template file")
 
 	rootCmd.AddCommand(generateCmd)
 }
@@ -28,6 +29,11 @@ var generateCmd = &cobra.Command{
 			cobra.CheckErr(err)
 		}
 		fmt.Println("Generating wrapper scripts in output folder:", outputDir)
+
+		templateFile := expandPath(config.TemplateFile)
+		if templateFile != "" {
+			fmt.Println("Using custom wrapper script template:", templateFile)
+		}
 
 		if len(config.Tools) == 0 {
 			fmt.Println("Warning: no tools are configured, nothing is generated.")
@@ -68,7 +74,7 @@ var generateCmd = &cobra.Command{
 					Env:          toolConfig.Env,
 					CustomScript: toolConfig.CustomScript,
 				}
-				err := gen.Generate(outputDir, toolParams)
+				err := gen.Generate(outputDir, templateFile, toolParams)
 				if err != nil {
 					fmt.Fprintln(os.Stderr, "Failed:", err)
 				}

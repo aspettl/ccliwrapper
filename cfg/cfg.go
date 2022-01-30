@@ -6,9 +6,10 @@ import (
 
 // Config represents the whole config file
 type Config struct {
-	OutputDir string
-	Engine    string
-	Tools     map[string]ToolConfig
+	OutputDir    string
+	TemplateFile string
+	Engine       string
+	Tools        map[string]ToolConfig
 }
 
 // ToolType determines which kind of tool should be generated

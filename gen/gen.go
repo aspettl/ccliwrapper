@@ -25,8 +25,8 @@ type ToolParams struct {
 }
 
 // Generate writes a shell script based on the template and the tool config
-func Generate(outputDir string, toolParams ToolParams) error {
-	t, err := template.New("root").Parse(tpl.WrapperScript)
+func Generate(outputDir, templateFile string, toolParams ToolParams) error {
+	t, err := loadTemplate(templateFile)
 	if err != nil {
 		return err
 	}
@@ -71,4 +71,12 @@ func GenerateAlias(outputDir, toolName, aliasName string) error {
 	}
 
 	return os.Rename(tmpFileName, aliasFileName)
+}
+
+func loadTemplate(templateFile string) (*template.Template, error) {
+	if templateFile != "" {
+		return template.ParseFiles(templateFile)
+	} else {
+		return template.New("root").Parse(tpl.WrapperScript)
+	}
 }
