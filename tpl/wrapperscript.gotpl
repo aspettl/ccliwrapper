@@ -10,7 +10,7 @@ image_name='{{ .ImageName }}'
 image_tag=""
 if [ -e "$current_folder/{{ .ImageTag.File }}" ] ; then
   {{- if .ImageTag.Sed }}
-  image_tag=$(sed {{ range .ImageTag.Sed }}-e '{{ . }}' {{ end }} "$current_folder/{{ .ImageTag.File }}")
+  image_tag=$(sed -n {{ range .ImageTag.Sed }}-e '{{ . }}' {{ end }} "$current_folder/{{ .ImageTag.File }}")
   {{- else }}
   image_tag=$(head -n1 "$current_folder/{{ .ImageTag.File }}")
   {{- end }}
