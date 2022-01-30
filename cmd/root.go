@@ -78,11 +78,10 @@ func initConfig() {
 	}
 
 	// If a config file is found, read it in.
-	if err := viper.ReadInConfig(); err == nil {
-		fmt.Println("Using config file:", viper.ConfigFileUsed())
-	}
+	err := viper.ReadInConfig()
+	cobra.CheckErr(err)
 	// Parse the data into our config struct.
-	err := viper.Unmarshal(&config)
+	err = viper.Unmarshal(&config)
 	cobra.CheckErr(err)
 
 	// Apply some default values for configured tools.

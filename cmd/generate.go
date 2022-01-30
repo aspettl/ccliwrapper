@@ -11,6 +11,7 @@ import (
 	"github.com/aspettl/ccliwrapper/cfg"
 	"github.com/aspettl/ccliwrapper/gen"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 func init() {
@@ -25,6 +26,8 @@ var generateCmd = &cobra.Command{
 	Short: "Generate wrapper scripts",
 	Long:  `Generate wrapper scripts for all configured CLI tools.`,
 	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println("Using config file:", viper.ConfigFileUsed())
+
 		outputDir := expandPath(config.OutputDir)
 		if err := os.MkdirAll(outputDir, 0755); err != nil {
 			cobra.CheckErr(err)
