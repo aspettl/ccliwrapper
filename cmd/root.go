@@ -59,8 +59,6 @@ func init() {
 	viper.SetDefault("OutputDir", outputDirDefault)
 	viper.SetDefault("Engine", engineDefault)
 	viper.SetDefault("Tools", map[string]cfg.ToolConfig{})
-	viper.BindPFlag("OutputDir", generateCmd.Flags().Lookup("output-dir"))
-	viper.BindPFlag("TemplateFile", generateCmd.Flags().Lookup("template-file"))
 }
 
 // initConfig reads in config file and ENV variables if set.

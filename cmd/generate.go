@@ -18,6 +18,9 @@ func init() {
 	generateCmd.Flags().StringP("output-dir", "o", "", "Output directory for wrapper scripts")
 	generateCmd.Flags().StringP("template-file", "t", "", "Path to custom wrapper script template file")
 
+	viper.BindPFlag("OutputDir", generateCmd.Flags().Lookup("output-dir"))
+	viper.BindPFlag("TemplateFile", generateCmd.Flags().Lookup("template-file"))
+
 	rootCmd.AddCommand(generateCmd)
 }
 
