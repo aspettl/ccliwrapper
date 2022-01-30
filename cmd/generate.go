@@ -29,7 +29,9 @@ var generateCmd = &cobra.Command{
 	Short: "Generate wrapper scripts",
 	Long:  `Generate wrapper scripts for all configured CLI tools.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("Using config file:", viper.ConfigFileUsed())
+		if err := readConfig(); err != nil {
+			cobra.CheckErr(err)
+		}
 
 		outputDir := expandPath(config.OutputDir)
 		if err := os.MkdirAll(outputDir, 0755); err != nil {

@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"runtime"
 
 	"github.com/aspettl/ccliwrapper/cfg"
 	"github.com/spf13/cobra"
@@ -61,9 +60,9 @@ func init() {
 	viper.SetDefault("Tools", map[string]cfg.ToolConfig{})
 }
 
-// initConfig reads in config file and ENV variables if set.
+// initConfig sets up the config file in viper, but does not actually try to read.
 func initConfig() {
-	// Use yaml as file format when file name does not have a file extension
+	// Use yaml as file format when file name does not have a file extension.
 	viper.SetConfigType("yaml")
 
 	if cfgFile != "" {
@@ -74,51 +73,28 @@ func initConfig() {
 		viper.AddConfigPath(homeDir)
 		viper.SetConfigName(cfgFileDefault)
 	}
+}
 
-	// If a config file is found, read it in.
+// readConfig reads the config file, this method needs to be explicitly called by all the commands needing the config.
+func readConfig() error {
+	// Read config file.
 	err := viper.ReadInConfig()
-	cobra.CheckErr(err)
+	if viper.ConfigFileUsed() != "" {
+		fmt.Println("Using config file:", viper.ConfigFileUsed())
+	}
+	if err != nil {
+		return err
+	}
+
 	// Parse the data into our config struct.
-	err = viper.Unmarshal(&config)
-	cobra.CheckErr(err)
+	if err := viper.Unmarshal(&config); err != nil {
+		return err
+	}
 
 	// Apply some default values for configured tools.
-	for toolName, toolConfig := range config.Tools {
-		if !toolConfig.Type.IsWrapperScript() && !toolConfig.Type.IsAlias() {
-			toolConfig.Type = cfg.WrapperScript
-		}
-		if toolConfig.ImageName == "" {
-			toolConfig.ImageName = "undefined"
-		}
-		if !toolConfig.ImageTag.Type.IsFixed() && !toolConfig.ImageTag.Type.IsFromFile() {
-			toolConfig.ImageTag.Type = cfg.Fixed
-		}
-		if toolConfig.ImageTag.Value == "" {
-			toolConfig.ImageTag.Value = "latest"
-		}
-		if toolConfig.ImageTag.File == "" {
-			toolConfig.ImageTag.File = "undefined"
-		}
-		if toolConfig.ImageTag.Fallback == "" {
-			toolConfig.ImageTag.Fallback = "latest"
-		}
-		if toolConfig.WorkDir == "" {
-			toolConfig.WorkDir = "/work"
-		}
-		if toolConfig.HomeDir == "" {
-			toolConfig.HomeDir = "/home/container"
-		}
-		if !toolConfig.Command.Type.IsDoNotSpecify() && !toolConfig.Command.Type.IsReuseName() {
-			toolConfig.Command.Type = cfg.DoNotSpecify
-		}
-		if toolConfig.AliasFor == "" {
-			toolConfig.AliasFor = "undefined"
-		}
-		if runtime.GOOS == "windows" {
-			toolConfig.ForceTemplate = true
-		}
-		config.Tools[toolName] = toolConfig
-	}
+	config.ApplyToolDefaults()
+
+	return nil
 }
 
 func fileExists(path string) bool {

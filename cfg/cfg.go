@@ -1,6 +1,7 @@
 package cfg
 
 import (
+	"runtime"
 	"strings"
 )
 
@@ -106,4 +107,43 @@ func (commandType CommandType) IsDoNotSpecify() bool {
 
 func (commandType CommandType) IsReuseName() bool {
 	return strings.EqualFold(string(commandType), ReuseName)
+}
+
+func (config Config) ApplyToolDefaults() {
+	for toolName, toolConfig := range config.Tools {
+		if !toolConfig.Type.IsWrapperScript() && !toolConfig.Type.IsAlias() {
+			toolConfig.Type = WrapperScript
+		}
+		if toolConfig.ImageName == "" {
+			toolConfig.ImageName = "undefined"
+		}
+		if !toolConfig.ImageTag.Type.IsFixed() && !toolConfig.ImageTag.Type.IsFromFile() {
+			toolConfig.ImageTag.Type = Fixed
+		}
+		if toolConfig.ImageTag.Value == "" {
+			toolConfig.ImageTag.Value = "latest"
+		}
+		if toolConfig.ImageTag.File == "" {
+			toolConfig.ImageTag.File = "undefined"
+		}
+		if toolConfig.ImageTag.Fallback == "" {
+			toolConfig.ImageTag.Fallback = "latest"
+		}
+		if toolConfig.WorkDir == "" {
+			toolConfig.WorkDir = "/work"
+		}
+		if toolConfig.HomeDir == "" {
+			toolConfig.HomeDir = "/home/container"
+		}
+		if !toolConfig.Command.Type.IsDoNotSpecify() && !toolConfig.Command.Type.IsReuseName() {
+			toolConfig.Command.Type = DoNotSpecify
+		}
+		if toolConfig.AliasFor == "" {
+			toolConfig.AliasFor = "undefined"
+		}
+		if runtime.GOOS == "windows" {
+			toolConfig.ForceTemplate = true
+		}
+		config.Tools[toolName] = toolConfig
+	}
 }
