@@ -58,6 +58,10 @@ docker_manifests:
     image_templates:
       - "{{ .Env.DOCKERHUB_USERNAME }}/{{ .ProjectName }}:{{ .Version }}-amd64"
       - "{{ .Env.DOCKERHUB_USERNAME }}/{{ .ProjectName }}:{{ .Version }}-arm64v8"
+  - name_template: "{{ .Env.DOCKERHUB_USERNAME }}/{{ .ProjectName }}:latest"
+    image_templates:
+      - "{{ .Env.DOCKERHUB_USERNAME }}/{{ .ProjectName }}:{{ .Version }}-amd64"
+      - "{{ .Env.DOCKERHUB_USERNAME }}/{{ .ProjectName }}:{{ .Version }}-arm64v8"
 checksum:
   name_template: 'checksums.txt'
 snapshot:

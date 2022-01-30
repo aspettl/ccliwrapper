@@ -52,7 +52,7 @@ are mounted.
 
 For the example config in this repo use (with `podman`):
 
-    podman run --rm -v $PWD/example:/example docker.io/aspettl/ccliwrapper:edge generate --config /example/ccliwrapper.yaml
+    podman run --rm -v $PWD/example:/example docker.io/aspettl/ccliwrapper:latest generate --config /example/ccliwrapper.yaml
 
 Note: `ccliwrapper` tries to create folders listed in the config file for mounts (and
 prints a warning if it does so). The simple reason is that a `run` command fails when
