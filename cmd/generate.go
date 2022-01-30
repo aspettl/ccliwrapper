@@ -45,38 +45,7 @@ var generateCmd = &cobra.Command{
 			switch toolConfig.Type {
 			case cfg.WrapperScript:
 				fmt.Println("Generating script:", toolName)
-
-				for i, mount := range toolConfig.Mounts {
-					mount.Source = expandPath(mount.Source)
-					toolConfig.Mounts[i] = mount
-
-					_, err := os.Stat(mount.Source)
-					if err == nil {
-						continue
-					}
-					if !errors.Is(err, fs.ErrNotExist) {
-						fmt.Fprintln(os.Stderr, "Error:", err)
-						continue
-					}
-					fmt.Println("Warning: mount source path does not exist, creating folder:", mount.Source)
-					if err := os.MkdirAll(mount.Source, 0755); err != nil {
-						fmt.Fprintln(os.Stderr, "Error:", err)
-					}
-				}
-
-				toolParams := gen.ToolParams{
-					Engine:       config.Engine,
-					Name:         toolName,
-					ImageName:    toolConfig.ImageName,
-					ImageTag:     toolConfig.ImageTag,
-					WorkDir:      toolConfig.WorkDir,
-					HomeDir:      toolConfig.HomeDir,
-					Command:      toolConfig.Command,
-					Mounts:       toolConfig.Mounts,
-					Env:          toolConfig.Env,
-					CustomScript: toolConfig.CustomScript,
-				}
-				err := gen.Generate(outputDir, templateFile, toolParams)
+				err := generateWrapperScript(outputDir, templateFile, toolName, toolConfig)
 				if err != nil {
 					fmt.Fprintln(os.Stderr, "Failed:", err)
 				}
@@ -110,4 +79,48 @@ func sortedToolNames() []string {
 	sort.SliceStable(toolNames, func(p, q int) bool { return config.Tools[toolNames[p]].Type > config.Tools[toolNames[q]].Type })
 
 	return toolNames
+}
+
+// generateWrapperScript renders the template with the correct configuration, but also makes sure beforehand that
+// local folders for mount points are expanded and exist
+func generateWrapperScript(outputDir, templateFile, toolName string, toolConfig cfg.ToolConfig) error {
+	for i, mount := range toolConfig.Mounts {
+		mount.Source = expandPath(mount.Source)
+		toolConfig.Mounts[i] = mount
+	}
+
+	createMountFolders(toolConfig)
+
+	toolParams := gen.ToolParams{
+		Engine:       config.Engine,
+		Name:         toolName,
+		ImageName:    toolConfig.ImageName,
+		ImageTag:     toolConfig.ImageTag,
+		WorkDir:      toolConfig.WorkDir,
+		HomeDir:      toolConfig.HomeDir,
+		Command:      toolConfig.Command,
+		Mounts:       toolConfig.Mounts,
+		Env:          toolConfig.Env,
+		CustomScript: toolConfig.CustomScript,
+	}
+	return gen.Generate(outputDir, templateFile, toolParams)
+}
+
+// createMountFolders tries to create all local folders for mount points if they do not yet exist - errors
+// are considered noncritical and are thus only written to stderr
+func createMountFolders(toolConfig cfg.ToolConfig) {
+	for _, mount := range toolConfig.Mounts {
+		_, err := os.Stat(mount.Source)
+		if err == nil {
+			continue
+		}
+		if !errors.Is(err, fs.ErrNotExist) {
+			fmt.Fprintln(os.Stderr, "Error:", err)
+			continue
+		}
+		fmt.Println("Warning: mount source path does not exist, creating folder:", mount.Source)
+		if err := os.MkdirAll(mount.Source, 0755); err != nil {
+			fmt.Fprintln(os.Stderr, "Error:", err)
+		}
+	}
 }
