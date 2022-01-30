@@ -43,9 +43,10 @@ var generateCmd = &cobra.Command{
 		}
 
 		if len(config.Tools) == 0 {
-			fmt.Println("Warning: no tools are configured, nothing is generated.")
+			fmt.Fprintln(os.Stderr, "Warning: no tools are configured, nothing is generated.")
 		}
 
+		errorCount := 0
 		for _, toolName := range sortedToolNames() {
 			toolConfig := config.Tools[toolName]
 			switch toolConfig.Type {
@@ -53,7 +54,8 @@ var generateCmd = &cobra.Command{
 				fmt.Println("Generating script:", toolName)
 				err := generateWrapperScript(outputDir, templateFile, toolName, toolConfig)
 				if err != nil {
-					fmt.Fprintln(os.Stderr, "Failed:", err)
+					fmt.Fprintln(os.Stderr, "Error:", err)
+					errorCount++
 				}
 			case cfg.Alias:
 				fmt.Println("Generating alias:", toolName)
@@ -64,9 +66,15 @@ var generateCmd = &cobra.Command{
 					err = gen.GenerateAlias(outputDir, toolConfig.AliasFor, toolName)
 				}
 				if err != nil {
-					fmt.Fprintln(os.Stderr, "Failed:", err)
+					fmt.Fprintln(os.Stderr, "Error:", err)
+					errorCount++
 				}
 			}
+		}
+
+		if errorCount > 0 {
+			fmt.Fprintln(os.Stderr, errorCount, "errors occured!")
+			os.Exit(1)
 		}
 	},
 }
@@ -126,12 +134,12 @@ func createMountFolders(toolConfig cfg.ToolConfig) {
 			continue
 		}
 		if !errors.Is(err, fs.ErrNotExist) {
-			fmt.Fprintln(os.Stderr, "Error:", err)
+			fmt.Fprintln(os.Stderr, "Warning:", err)
 			continue
 		}
-		fmt.Println("Warning: mount source path does not exist, creating folder:", mount.Source)
+		fmt.Println("Information: mount source path does not exist, creating folder:", mount.Source)
 		if err := os.MkdirAll(mount.Source, 0755); err != nil {
-			fmt.Fprintln(os.Stderr, "Error:", err)
+			fmt.Fprintln(os.Stderr, "Warning:", err)
 		}
 	}
 }
