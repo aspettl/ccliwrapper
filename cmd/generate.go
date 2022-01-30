@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/fs"
 	"os"
+	"sort"
 	"strings"
 
 	"github.com/aspettl/ccliwrapper/cfg"
@@ -39,7 +40,8 @@ var generateCmd = &cobra.Command{
 			fmt.Println("Warning: no tools are configured, nothing is generated.")
 		}
 
-		for toolName, toolConfig := range config.Tools {
+		for _, toolName := range sortedToolNames() {
+			toolConfig := config.Tools[toolName]
 			switch toolConfig.Type {
 			case cfg.WrapperScript:
 				fmt.Println("Generating script:", toolName)
@@ -89,9 +91,23 @@ var generateCmd = &cobra.Command{
 	},
 }
 
+// expandPath makes sure environment variables and "~" are expanded in a path
 func expandPath(path string) string {
 	if strings.HasPrefix(path, "~/") || strings.HasPrefix(path, "~\\") {
 		path = homeDir + path[1:]
 	}
 	return os.ExpandEnv(path)
+}
+
+// sortedToolNames returns all configured tool names in a deterministic order: first all wrapper scripts, then all aliases, in both cases alphabetical
+func sortedToolNames() []string {
+	toolNames := make([]string, 0, len(config.Tools))
+	for toolName := range config.Tools {
+		toolNames = append(toolNames, toolName)
+	}
+
+	sort.Strings(toolNames)
+	sort.SliceStable(toolNames, func(p, q int) bool { return config.Tools[toolNames[p]].Type > config.Tools[toolNames[q]].Type })
+
+	return toolNames
 }
