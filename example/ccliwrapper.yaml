@@ -144,7 +144,7 @@ tools:
     imageName: alpine/helm
     imageTag:
       type: Fixed
-      value: "3.8.0"
+      value: "3.8.1"
     command:
       type: DoNotSpecify
     mounts:
