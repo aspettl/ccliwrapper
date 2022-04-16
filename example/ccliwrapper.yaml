@@ -24,7 +24,7 @@ tools:
     imageName: golang
     imageTag:
       type: Fixed
-      value: "1.17"
+      value: "1.18"
     workDir: /app
     command:
       type: ReuseName
@@ -144,7 +144,7 @@ tools:
     imageName: alpine/helm
     imageTag:
       type: Fixed
-      value: "3.8.1"
+      value: "3.8.2"
     command:
       type: DoNotSpecify
     mounts:
