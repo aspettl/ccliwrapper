@@ -69,5 +69,4 @@ Not yet implemented:
 * Possibility to specify environment variables that are always passed through to the container
 * Native support for shell completion with caching
 * Support CLI argument parsing to determine additional files or ports to attach
-* Support host network mode
 * Add automated tests

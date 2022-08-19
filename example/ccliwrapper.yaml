@@ -118,6 +118,7 @@ tools:
     mounts:
       - source: $HOME/.kube
         target: /home/container/.kube
+    networkMode: host # use host network to support port-forward
     customScript: |-
       # implement simple caching for "kubectl completion" commands so that this can be used
       # in e.g. .bashrc without a big performance impact

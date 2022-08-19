@@ -44,6 +44,9 @@ declare -a additional_params=(
   {{- range .Env }}
   -e '{{ .Name }}={{ .Value }}'
   {{- end }}
+  {{- if .NetworkMode }}
+  --net '{{ .NetworkMode }}'
+  {{- end }}
 )
 
 {{ if .Command.Type.IsReuseName -}}

@@ -122,6 +122,7 @@ func generateWrapperScript(outputDir, templateFile, toolName string, toolConfig 
 		Command:      toolConfig.Command,
 		Mounts:       toolConfig.Mounts,
 		Env:          toolConfig.Env,
+		NetworkMode:  toolConfig.NetworkMode,
 		CustomScript: toolConfig.CustomScript,
 	}
 	return gen.Generate(outputDir, templateFile, toolParams)

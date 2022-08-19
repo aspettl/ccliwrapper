@@ -21,6 +21,7 @@ type ToolParams struct {
 	Command      cfg.CommandConfig
 	Mounts       []cfg.MountConfig
 	Env          []cfg.EnvConfig
+	NetworkMode  string
 	CustomScript string
 }
 

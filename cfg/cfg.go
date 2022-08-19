@@ -52,6 +52,7 @@ type ToolConfig struct {
 	Command      CommandConfig
 	Mounts       []MountConfig
 	Env          []EnvConfig
+	NetworkMode  string
 	CustomScript string
 
 	// Following keys only when Type=Alias
