@@ -24,7 +24,7 @@ tools:
     imageName: golang
     imageTag:
       type: Fixed
-      value: "1.18"
+      value: "1.19"
     workDir: /app
     command:
       type: ReuseName
@@ -60,6 +60,9 @@ tools:
         additional_params+=( -p 8080:8080 )
       fi
   npm:
+    type: Alias
+    aliasFor: node
+  npx:
     type: Alias
     aliasFor: node
   yarn:
@@ -145,7 +148,7 @@ tools:
     imageName: alpine/helm
     imageTag:
       type: Fixed
-      value: "3.9.2"
+      value: "3.9.4"
     command:
       type: DoNotSpecify
     mounts:
