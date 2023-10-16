@@ -115,7 +115,7 @@ tools:
     imageName: bitnami/kubectl
     imageTag:
       type: Fixed
-      value: "1.26"
+      value: "1.27"
     command:
       type: DoNotSpecify
     mounts:
@@ -148,7 +148,7 @@ tools:
     imageName: alpine/helm
     imageTag:
       type: Fixed
-      value: "3.11.3"
+      value: "3.13.1"
     command:
       type: DoNotSpecify
     mounts:
