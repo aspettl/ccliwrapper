@@ -24,7 +24,7 @@ tools:
     imageName: golang
     imageTag:
       type: Fixed
-      value: "1.20"
+      value: "1.21"
     workDir: /app
     command:
       type: ReuseName
