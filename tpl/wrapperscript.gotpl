@@ -38,7 +38,7 @@ declare -a additional_params=(
   -v '{{ .Source }}:{{ .Target }}'
   {{- end }}
   {{- if ne .HomeDir .WorkDir }}
-  --tmpfs '{{ .HomeDir }}'
+  --mount 'type=tmpfs,destination={{ .HomeDir }},chown=true,tmpfs-mode=0700'
   {{- end }}
   -e 'HOME={{ .HomeDir }}'
   {{- range .Env }}
