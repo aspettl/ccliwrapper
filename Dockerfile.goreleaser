@@ -1,5 +1,6 @@
 FROM scratch
 
-COPY ccliwrapper /
+ARG TARGETPLATFORM
+COPY $TARGETPLATFORM/ccliwrapper /
 
 ENTRYPOINT ["/ccliwrapper"]
