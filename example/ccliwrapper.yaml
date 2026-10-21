@@ -112,15 +112,16 @@ tools:
 
   kubectl:
     type: WrapperScript
-    imageName: bitnami/kubectl
+    imageName: dhi.io/kubectl # note: this requires "docker login dhi.io" to pull
     imageTag:
       type: Fixed
-      value: "1.27"
+      value: "1.37"
+    homeDir: /home/nonroot
     command:
       type: DoNotSpecify
     mounts:
       - source: $HOME/.kube
-        target: /home/container/.kube
+        target: /home/nonroot/.kube
     networkMode: host # use host network to support port-forward
     customScript: |-
       # implement simple caching for "kubectl completion" commands so that this can be used
